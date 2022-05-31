@@ -1,10 +1,10 @@
 package com.service.hml;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
 import java.util.List;
 
@@ -18,6 +18,11 @@ public class HmlRespositoryTests {
 
     @Autowired
     private HmlRepository hmlRepository;
+
+    @BeforeEach
+    public void resetDb() {
+        hmlRepository.deleteAll();
+    }
 
     @Test
     void whenFindAll_resturnAll(){

@@ -1,6 +1,6 @@
 package com.service.hml;
 
-import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -33,7 +33,7 @@ public class HmlRestApiTests {
     @Autowired
     private HmlRepository repository;
 
-    @AfterEach
+    @BeforeEach
     public void resetDb() {
         repository.deleteAll();
     }
@@ -70,7 +70,7 @@ public class HmlRestApiTests {
 
     @Test
     void whenValidTittle_thenGetBook() throws IOException, Exception{
-        Book ford = new Book(4, "Book", "2014 Tauros", "");
+        Book ford = new Book(1, "Book", "2014 Tauros", "");
         repository.saveAndFlush(ford);
 
         System.out.println(repository.findAll());
