@@ -18,6 +18,7 @@
 		<testcontainers.version>1.16.0</testcontainers.version>
 		<sonar.organization>tqs21</sonar.organization>
   		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<jacoco.version>0.8.6</jacoco.version>
 	</properties>
 	<dependencies>
 		<dependency>
