@@ -1,5 +1,10 @@
 package com.service.hml;
 
+import com.service.hml.entities.Book;
+import com.service.hml.entities.User;
+import com.service.hml.repositories.HmlRepository;
+import com.service.hml.repositories.UserRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,35 +36,41 @@ public class HmlRestApiTests {
     private MockMvc mvc;
 
     @Autowired
-    private HmlRepository repository;
+    private HmlRepository hmlRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    Book ford = new Book("Ford", "2014 Tauros", "");
+    User test1 = new User("test1", "test1@gmail.com","1234");
 
     @BeforeEach
-    public void resetDb() {
-        repository.deleteAll();
+    public void insertIntoDb() {
+        hmlRepository.deleteAll();
+        userRepository.deleteAll();
+
+        hmlRepository.saveAndFlush(ford);
+        userRepository.saveAndFlush(test1);
     }
 
     @Test
     void whenValidInput_thenCreateBook() throws IOException, Exception{
-        Book ford = new Book(1, "Ford", "2014 Tauros", "");
-
         mvc.perform(post("/hml/api/addBook")
                         .content(asJsonString(ford))
                         .contentType(MediaType.APPLICATION_JSON))
                         .andExpect(status().isCreated());
 
-        List<Book> found = repository.findAll();
+        List<Book> found = hmlRepository.findAll();
         assertThat(found).extracting(Book::getTitle).containsOnly("Ford");
     }
 
     @Test
     void whenGetBookAllBooks_thenGetAllBooks() throws Exception {
-        Book ford = new Book(1, "Ford", "2014 Tauros", "");
-        Book audi = new Book(2, "Audi", "Audi A8", "");
-        Book bmw = new Book(3, "BMW", "BMW M4", "");
+        Book audi = new Book("Audi", "Audi A8", "");
+        Book bmw = new Book("BMW", "BMW M4", "");
 
-        repository.saveAndFlush(ford);
-        repository.saveAndFlush(audi);
-        repository.saveAndFlush(bmw);
+        hmlRepository.saveAndFlush(audi);
+        hmlRepository.saveAndFlush(bmw);
 
         mvc.perform(get("/hml/api/allBooks").contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -70,10 +81,6 @@ public class HmlRestApiTests {
 
     @Test
     void whenValidTittle_thenGetBook() throws IOException, Exception{
-        Book ford = new Book(1, "Book", "2014 Tauros", "");
-        repository.saveAndFlush(ford);
-
-        System.out.println(repository.findAll());
         mvc.perform(get("/hml/api/book/"+ford.getTitle()).contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isFound());
@@ -88,9 +95,37 @@ public class HmlRestApiTests {
 
     @Test
     void whenValidInput_thenCreateDelivery() throws IOException, Exception{
-        Book ford = new Book(1, "Ford", "2014 Tauros", "");
+        Book ford = new Book("Ford", "2014 Tauros", "");
         //mvc.perform(post("/hml/api/delivery").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(ford)));
 
+    }
+
+    @Test
+    void whenLogginCorrectly_loggin() throws Exception {
+        mvc.perform(post("/hml/api/login/")
+                .content(asJsonString(test1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
+    }
+
+    @Test
+    void whenLogginIncorrectly_failTologgin() throws Exception{
+        test1.setPassword("4321");
+
+        mvc.perform(post("/hml/api/login/")
+                        .content(asJsonString(test1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    void whenUserNotFound_returnsNotFound() throws Exception{
+        User test2 = new User("test2", "test2@gmail.com","1234");
+
+        mvc.perform(post("/hml/api/login/")
+                        .content(asJsonString(test2))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotFound());
     }
 
     public static String asJsonString(final Object obj) {
