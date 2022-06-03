@@ -1,4 +1,4 @@
-package com.service.hml;
+package com.service.hml.entities;
 
 public class BookDTO {
     private int ID;

@@ -1,5 +1,12 @@
 package com.service.hml;
 
+import com.service.hml.entities.Book;
+import com.service.hml.entities.BookDTO;
+import com.service.hml.entities.User;
+import com.service.hml.entities.UserDTO;
+import com.service.hml.repositories.HmlRepository;
+import com.service.hml.repositories.UserRepository;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +25,11 @@ public class HmlAPI {
     @Autowired
     private HmlRepository hmlRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @PostMapping("/delivery")
-    public void makeDelivery(@RequestBody BookDTO bookDTO){
+    public void makeDelivery(@RequestBody @NotNull BookDTO bookDTO){
         Book book = bookDTO.toBookEntity();
 
     }
@@ -45,8 +55,23 @@ public class HmlAPI {
     }
 
     @PostMapping("/addBook")
-    public ResponseEntity<Book> addNewBook(@RequestBody BookDTO book){
+    public ResponseEntity<Book> addNewBook(@RequestBody @NotNull BookDTO book){
         Book saved = hmlRepository.save(book.toBookEntity());
         return new ResponseEntity<Book>(saved, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<User> loggin(@RequestBody @NotNull UserDTO userDTO){
+        User user = userRepository.findByEmail(userDTO.getEmail());
+        HttpStatus status;
+
+        if(user != null){
+            if(user.getPassword().equals(userDTO.getPassword()))
+                status = HttpStatus.ACCEPTED;
+            else status = HttpStatus.NOT_ACCEPTABLE;
+        }
+        else status = HttpStatus.NOT_FOUND;
+
+        return new ResponseEntity<User>(user, status);
     }
 }

@@ -1,15 +1,13 @@
-package com.service.hml;
+package com.service.hml.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "books")
 public class Book {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "ID", nullable = false)
     private int ID;
 
@@ -23,6 +21,12 @@ public class Book {
     private String coverUrlPath;
 
     public Book(){
+    }
+
+    public Book(String title, String author, String coverUrlPath){
+        this.title = title;
+        this.author = author;
+        this.coverUrlPath = coverUrlPath;
     }
 
     public Book(int ID, String title, String author, String coverUrlPath){
