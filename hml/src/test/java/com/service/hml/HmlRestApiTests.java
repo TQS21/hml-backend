@@ -41,7 +41,7 @@ public class HmlRestApiTests {
     @Autowired
     private UserRepository userRepository;
 
-    Book ford = new Book("Ford", "2014 Tauros", "");
+    Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
     User test1 = new User("test1", "test1@gmail.com","1234");
 
     @BeforeEach
@@ -66,8 +66,8 @@ public class HmlRestApiTests {
 
     @Test
     void whenGetBookAllBooks_thenGetAllBooks() throws Exception {
-        Book audi = new Book("Audi", "Audi A8", "");
-        Book bmw = new Book("BMW", "BMW M4", "");
+        Book audi = new Book("Audi", "Audi A8", "", 5.0);
+        Book bmw = new Book("BMW", "BMW M4", "", 1.0);
 
         hmlRepository.saveAndFlush(audi);
         hmlRepository.saveAndFlush(bmw);
@@ -95,7 +95,7 @@ public class HmlRestApiTests {
 
     @Test
     void whenValidInput_thenCreateDelivery() throws IOException, Exception{
-        Book ford = new Book("Ford", "2014 Tauros", "");
+        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
         //mvc.perform(post("/hml/api/delivery").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(ford)));
 
     }

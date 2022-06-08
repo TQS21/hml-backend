@@ -34,9 +34,9 @@ public class HmlRespositoryTests {
 
     @Test
     void whenFindAll_resturnAll(){
-        Book ford = new Book("Ford", "2014 Tauros","");
-        Book audi = new Book("Audi", "Audi A8","");
-        Book bmw = new Book("BMW", "BMW M4","");
+        Book ford = new Book("Ford", "2014 Tauros","",10.0);
+        Book audi = new Book("Audi", "Audi A8","",5.0);
+        Book bmw = new Book("BMW", "BMW M4","",1.0);
 
         entityManager.persist(ford);
         entityManager.persist(bmw);
@@ -50,7 +50,7 @@ public class HmlRespositoryTests {
 
     @Test
     void whenFindByExistingTittle_findBook(){
-        Book ford = new Book("Ford", "2014 Tauros","");
+        Book ford = new Book("Ford", "2014 Tauros","",10.0);
         entityManager.persistAndFlush(ford);
 
         Book found = hmlRepository.findByTitle(ford.getTitle());

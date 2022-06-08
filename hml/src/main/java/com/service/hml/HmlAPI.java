@@ -1,9 +1,6 @@
 package com.service.hml;
 
-import com.service.hml.entities.Book;
-import com.service.hml.entities.BookDTO;
-import com.service.hml.entities.User;
-import com.service.hml.entities.UserDTO;
+import com.service.hml.entities.*;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
@@ -12,7 +9,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.List;
 
@@ -23,55 +26,33 @@ public class HmlAPI {
     Logger logger = LoggerFactory.getLogger(HmlAPI.class);
 
     @Autowired
-    private HmlRepository hmlRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private HmlService hmlService;
 
     @PostMapping("/delivery")
-    public void makeDelivery(@RequestBody @NotNull BookDTO bookDTO){
-        Book book = bookDTO.toBookEntity();
-
+    public void makeDelivery(@RequestBody @NotNull BookDTO bookDTO,
+                             @RequestBody @NotNull Address address,
+                             @RequestBody @NotNull UserDTO user,
+                             @RequestBody @NotNull int phone){
+        hmlService.makeDelivery(bookDTO, address, user, phone);
     }
 
     @GetMapping("/allBooks")
     public List<Book> getAllBooks(){
-        return hmlRepository.findAll();
+        return hmlService.getAllBooks();
     }
 
     @GetMapping("/book/{title}")
     public ResponseEntity<Book> getBookDetails(@PathVariable(required = true, name = "title") String title){
-        Book book = hmlRepository.findByTitle(title);
-        HttpStatus status;
-
-        if(book != null){
-            status = HttpStatus.FOUND;
-        }
-        else {
-            status = HttpStatus.NOT_FOUND;
-        }
-
-        return new ResponseEntity<Book>(book, status);
+        return hmlService.getBookDetails(title);
     }
 
     @PostMapping("/addBook")
     public ResponseEntity<Book> addNewBook(@RequestBody @NotNull BookDTO book){
-        Book saved = hmlRepository.save(book.toBookEntity());
-        return new ResponseEntity<Book>(saved, HttpStatus.CREATED);
+        return hmlService.addNewBook(book);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<User> loggin(@RequestBody @NotNull UserDTO userDTO){
-        User user = userRepository.findByEmail(userDTO.getEmail());
-        HttpStatus status;
-
-        if(user != null){
-            if(user.getPassword().equals(userDTO.getPassword()))
-                status = HttpStatus.ACCEPTED;
-            else status = HttpStatus.NOT_ACCEPTABLE;
-        }
-        else status = HttpStatus.NOT_FOUND;
-
-        return new ResponseEntity<User>(user, status);
+    public ResponseEntity<User> login(@RequestBody @NotNull UserDTO userDTO){
+        return hmlService.login(userDTO);
     }
 }
