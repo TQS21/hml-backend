@@ -9,18 +9,22 @@ public class BookDTO {
 
     private String coverUrlPath;
 
-    public BookDTO fromBookEntity(Book book){
-        return new BookDTO(book.getID(), book.getTitle(), book.getAuthor(), book.getCoverUrlPath());
+    private Double price;
+
+
+    public static BookDTO fromBookEntity(Book book){
+        return new BookDTO(book.getID(), book.getTitle(), book.getAuthor(), book.getCoverUrlPath(), book.getPrice());
     }
 
     public Book toBookEntity(){
-        return new Book(this.ID, this.title, this.author, this.coverUrlPath);
+        return new Book(this.ID, this.title, this.author, this.coverUrlPath, this.price);
     }
 
-    public BookDTO(int ID, String title, String author, String coverUrlPath){
+    public BookDTO(int ID, String title, String author, String coverUrlPath, Double price){
         this.ID = ID;
         this.title = title;
         this.author = author;
         this.coverUrlPath = coverUrlPath;
+        this.price = price;
     }
 }

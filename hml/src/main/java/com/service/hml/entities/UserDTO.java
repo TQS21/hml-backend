@@ -12,19 +12,23 @@ public class UserDTO {
 
     private String password;
 
+    public UserDTO(){}
+
     public UserDTO(String name, String email, String password){
         this.name = name;
         this.email = email;
         this.password = password;
     }
 
-    public UserDTO fromUserEntity(User user){
+    public static UserDTO fromUserEntity(User user){
         return new UserDTO(user.getName(), user.getEmail(), user.getPassword());
     }
 
     public User toUserEntity(UserDTO userDTO){
         return new User(userDTO.name, userDTO.email, userDTO.password);
     }
+
+    public String getName() {return name;}
 
     public String getEmail() {
         return email;
