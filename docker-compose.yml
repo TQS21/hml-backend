@@ -40,10 +40,8 @@ services:
   hml-api:
     container_name: hml_api
     depends_on:
-      db_users:
-        condition: service_healthy
-      db_books:
-        condition: service_healthy
+      - db_users
+      - db_books
     build: ./hml
     env_file: ./.env
     environment:
