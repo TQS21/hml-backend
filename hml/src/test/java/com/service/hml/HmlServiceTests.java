@@ -52,10 +52,10 @@ public class HmlServiceTests {
         List<Book> addedBooks = Arrays.asList(ford,audi,bmw);
 
         Mockito.when(hmlRepository.findAll()).thenReturn(addedBooks);
-        Mockito.when(hmlService.getAllBooks()).thenReturn(addedBooks);
+        Mockito.when(hmlService.getAllBooks().getBody()).thenReturn(addedBooks);
 
         assertThat(addedBooks).isEqualTo(hmlRepository.findAll());
-        assertThat(addedBooks).isEqualTo(hmlService.getAllBooks());
+        assertThat(addedBooks).isEqualTo(hmlService.getAllBooks().getBody());
     }
 
     @Test

@@ -79,8 +79,13 @@ public class HmlService {
         return gsonString;
     }
 
-    public List<Book> getAllBooks(){
-        return hmlRepository.findAll();
+    public ResponseEntity<List<Book>> getAllBooks(){
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("find-all-books")
+                .body(hmlRepository.findAll());
+
+        //return hmlRepository.findAll();
     }
 
     public ResponseEntity<Book> getBookDetails(String title){
@@ -94,12 +99,21 @@ public class HmlService {
             status = HttpStatus.NOT_FOUND;
         }
 
-        return new ResponseEntity<Book>(book, status);
+        return ResponseEntity.status(status)
+                .header("find-book-"+title,"book")
+                .body(book);
+
+        // return new ResponseEntity<Book>(book, status);
     }
 
     public ResponseEntity<Book> addNewBook(BookDTO book){
         Book saved = hmlRepository.save(book.toBookEntity());
-        return new ResponseEntity<Book>(saved, HttpStatus.CREATED);
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .header("new-book-added")
+                .body(book.toBookEntity());
+
+        //return new ResponseEntity<Book>(saved, HttpStatus.CREATED);
     }
 
     public ResponseEntity<User> login(UserDTO userDTO){
@@ -113,6 +127,10 @@ public class HmlService {
         }
         else status = HttpStatus.NOT_FOUND;
 
-        return new ResponseEntity<User>(user, status);
+        return ResponseEntity.status(status)
+                .header("login-in")
+                .body(user);
+
+        //return new ResponseEntity<User>(user, status);
     }
 }

@@ -38,7 +38,7 @@ public class HmlAPI {
 
     @GetMapping("/allBooks")
     public List<Book> getAllBooks(){
-        return hmlService.getAllBooks();
+        return hmlService.getAllBooks().getBody();
     }
 
     @GetMapping("/book/{title}")
