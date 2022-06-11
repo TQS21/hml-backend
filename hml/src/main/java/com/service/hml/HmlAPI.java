@@ -55,4 +55,10 @@ public class HmlAPI {
     public ResponseEntity<User> login(@RequestBody @NotNull UserDTO userDTO){
         return hmlService.login(userDTO);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody @NotNull UserDTO userDTO){
+        return hmlService.register(userDTO);
+    }
+
 }

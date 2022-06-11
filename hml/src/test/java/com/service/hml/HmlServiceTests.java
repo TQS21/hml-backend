@@ -1,27 +1,25 @@
 package com.service.hml;
 
-import com.service.hml.entities.*;
+import com.service.hml.entities.Address;
+import com.service.hml.entities.Book;
+import com.service.hml.entities.BookDTO;
+import com.service.hml.entities.User;
+import com.service.hml.entities.UserDTO;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.internal.verification.VerificationModeFactory;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import javax.net.ssl.SSLException;
-import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 public class HmlServiceTests {
@@ -99,16 +97,15 @@ public class HmlServiceTests {
     @Test
     void whenLogginCorrectly_loggin() throws Exception {
         User user = new User("test1", "test1@gmail.com","1234");
-        UserDTO userDTO = new UserDTO();
         String email = "test1@gmail.com";
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
 
         User userResult = userRepository.findByEmail(email);
-        ResponseEntity<User> result = hmlService.login(userDTO.fromUserEntity(user));
+        ResponseEntity<User> result = hmlService.login(UserDTO.fromUserEntity(user));
 
         assertThat(userResult).isEqualTo(user);
-        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(result.getBody()).isEqualTo(user);
     }
 
@@ -131,16 +128,38 @@ public class HmlServiceTests {
     @Test
     void whenUserNotFound_returnsNotFound() throws Exception{
         User user = new User("test1", "test1@gmail.com","1234");
-        UserDTO userDTO = new UserDTO();
         String email = "test1@gmail.com";
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(null);
 
         User userResult = userRepository.findByEmail(email);
-        ResponseEntity<User> result = hmlService.login(userDTO.fromUserEntity(user));
+        ResponseEntity<User> result = hmlService.login(UserDTO.fromUserEntity(user));
 
         assertThat(userResult).isEqualTo(null);
         assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         assertThat(result.getBody()).isEqualTo(null);
+    }
+
+    @Test
+    void whenRegisterNewUser_returnsAccepted() throws Exception{
+        UserDTO user = new UserDTO("test1", "test1@gmail.com","1234");
+
+        ResponseEntity<User> result = hmlService.register(user);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.ACCEPTED);
+        assertThat(result.getBody().getEmail()).isEqualTo(user.getEmail());
+        assertThat(result.getBody().getName()).isEqualTo(user.getName());
+    }
+
+    @Test
+    void whenRegisterExistingUser_returnsNotAccepted() throws Exception{
+        User user = new User("test1", "test1@gmail.com","1234");
+
+        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+        ResponseEntity<User> result = hmlService.register(UserDTO.fromUserEntity(user));
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.NOT_ACCEPTABLE);
+        assertThat(result.getBody().getEmail()).isEqualTo(user.getEmail());
+        assertThat(result.getBody().getName()).isEqualTo(user.getName());
     }
 }

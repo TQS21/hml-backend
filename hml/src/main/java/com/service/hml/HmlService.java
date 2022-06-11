@@ -1,10 +1,12 @@
 package com.service.hml;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.service.hml.entities.*;
+import com.service.hml.entities.Address;
+import com.service.hml.entities.Book;
+import com.service.hml.entities.BookDTO;
+import com.service.hml.entities.User;
+import com.service.hml.entities.UserDTO;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
 import io.netty.resolver.DefaultAddressResolverGroup;
@@ -16,11 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 
@@ -122,7 +122,7 @@ public class HmlService {
 
         if(user != null){
             if(user.getPassword().equals(userDTO.getPassword()))
-                status = HttpStatus.ACCEPTED;
+                status = HttpStatus.OK;
             else status = HttpStatus.NOT_ACCEPTABLE;
         }
         else status = HttpStatus.NOT_FOUND;
@@ -133,4 +133,22 @@ public class HmlService {
 
         //return new ResponseEntity<User>(user, status);
     }
+
+    public ResponseEntity<User> register(UserDTO userDTO){
+        User user = userDTO.toUserEntity(userDTO);
+        HttpStatus status;
+
+        if(userRepository.findByEmail(userDTO.getEmail()) == null){
+            status = HttpStatus.ACCEPTED;
+            userRepository.save(user);
+        }
+        else status = HttpStatus.NOT_ACCEPTABLE;
+
+        return ResponseEntity.status(status)
+                .header("registered")
+                .body(user);
+
+        //return new ResponseEntity<User>(user, status);
+    }
+
 }

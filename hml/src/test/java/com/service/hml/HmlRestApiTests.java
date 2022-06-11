@@ -105,7 +105,7 @@ public class HmlRestApiTests {
         mvc.perform(post("/hml/api/login/")
                 .content(asJsonString(test1))
                 .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isAccepted());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -126,6 +126,26 @@ public class HmlRestApiTests {
                         .content(asJsonString(test2))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void whenRegisterNewUser_returnsAcceptable() throws Exception{
+        User test1 = new User("test2", "test2@gmail.com","1234");
+
+        mvc.perform(post("/hml/api/register/")
+                        .content(asJsonString(test1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isAccepted());
+    }
+    
+    @Test
+    void whenRegisterOldUser_returnsNotAcceptable() throws Exception{
+        User test1 = new User("test1", "test1@gmail.com","1234");
+
+        mvc.perform(post("/hml/api/register/")
+                        .content(asJsonString(test1))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isNotAcceptable());
     }
 
     public static String asJsonString(final Object obj) {
