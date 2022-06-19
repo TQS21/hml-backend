@@ -24,4 +24,7 @@ fi
 PROJECT="hml_$MODE"
 
 compose="docker-compose.${MODE}.yml"
-docker-compose -p $PROJECT -f $compose down -v && docker-compose -p $PROJECT -f $compose up -d --build 
+
+docker-compose -p $PROJECT -f $compose down -v || true
+
+docker-compose -p $PROJECT -f $compose up -d --build 
