@@ -41,7 +41,7 @@ public class HmlServiceTests {
 
     @Test
     void whenGetUserHistory_thenGetHistory(){
-        User user = new User("test", "test@gmail.com", "1234");
+        User user = new User("test", "test@gmail.com", "1234",123456789);
         Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
         Book audi = new Book("Audi", "Audi A8", "", 5.0);
 
@@ -123,7 +123,7 @@ public class HmlServiceTests {
 
     @Test
     void whenLogginCorrectly_loggin() throws Exception {
-        User user = new User("test1", "test1@gmail.com","1234");
+        User user = new User("test1", "test1@gmail.com","1234",123456789);
         String email = "test1@gmail.com";
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(user);
@@ -138,7 +138,7 @@ public class HmlServiceTests {
 
     @Test
     void whenLoginIncorrectly_failToLogin() throws Exception{
-        User user = new User("test1", "test1@gmail.com","1234");
+        User user = new User("test1", "test1@gmail.com","1234",123456789);
         UserDTO userDTO = new UserDTO("test1", "test1@gmail.com","4321");
         String email = "test1@gmail.com";
 
@@ -154,7 +154,7 @@ public class HmlServiceTests {
 
     @Test
     void whenUserNotFound_returnsNotFound() throws Exception{
-        User user = new User("test1", "test1@gmail.com","1234");
+        User user = new User("test1", "test1@gmail.com","1234",123456789);
         String email = "test1@gmail.com";
 
         Mockito.when(userRepository.findByEmail(email)).thenReturn(null);
@@ -180,7 +180,7 @@ public class HmlServiceTests {
 
     @Test
     void whenRegisterExistingUser_returnsNotAccepted() throws Exception{
-        User user = new User("test1", "test1@gmail.com","1234");
+        User user = new User("test1", "test1@gmail.com","1234",123456789);
 
         Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
         ResponseEntity<User> result = hmlService.register(UserDTO.fromUserEntity(user));

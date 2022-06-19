@@ -65,7 +65,7 @@ public class HmlRespositoryTests {
 
     @Test
     void whenFindByValidEmail_findUser(){
-        User test1 = new User("test1", "test1@gmail.com","1234");
+        User test1 = new User("test1", "test1@gmail.com","1234",123456789);
         entityManager.persistAndFlush(test1);
 
         User found = userRepository.findByEmail(test1.getEmail());

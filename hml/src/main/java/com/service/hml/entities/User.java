@@ -30,12 +30,16 @@ public class User {
     @Column(name = "delivery")
     private int delivery = -1;
 
+    @Column(name = "phone")
+    private int phone;
+
     public User(){}
 
-    public User(String name, String email, String password){
+    public User(String name, String email, String password, int phone){
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phone = phone;
     }
 
     public String getName() {
@@ -78,12 +82,20 @@ public class User {
         this.delivery = delivery;
     }
 
+    public int getPhone() {
+        return phone;
+    }
+
+    public void setPhone(int phone) {
+        this.phone = phone;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                ", phone='" + phone + '\'' +
                 '}';
     }
 }

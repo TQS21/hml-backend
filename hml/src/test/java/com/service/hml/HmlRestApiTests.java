@@ -4,7 +4,6 @@ import com.service.hml.entities.*;
 import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
-import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -49,7 +46,7 @@ public class HmlRestApiTests {
     private HistoryRepository historyRepository;
 
     Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
-    User test1 = new User("test1", "test1@gmail.com","1234");
+    User test1 = new User("test1", "test1@gmail.com","1234",123456789);
 
     @BeforeEach
     public void insertIntoDb() {
@@ -130,7 +127,7 @@ public class HmlRestApiTests {
 
     @Test
     void whenUserNotFound_returnsNotFound() throws Exception{
-        User test2 = new User("test2", "test2@gmail.com","1234");
+        User test2 = new User("test2", "test2@gmail.com","1234",123456789);
 
         mvc.perform(post("/hml/api/login/")
                         .content(asJsonString(test2))
@@ -140,7 +137,7 @@ public class HmlRestApiTests {
 
     @Test
     void whenRegisterNewUser_returnsAcceptable() throws Exception{
-        User test1 = new User("test2", "test2@gmail.com","1234");
+        User test1 = new User("test2", "test2@gmail.com","1234",123456789);
 
         mvc.perform(post("/hml/api/register/")
                         .content(asJsonString(test1))
@@ -150,7 +147,7 @@ public class HmlRestApiTests {
 
     @Test
     void whenRegisterOldUser_returnsNotAcceptable() throws Exception{
-        User test1 = new User("test1", "test1@gmail.com","1234");
+        User test1 = new User("test1", "test1@gmail.com","1234",123456789);
 
         mvc.perform(post("/hml/api/register/")
                         .content(asJsonString(test1))

@@ -34,7 +34,7 @@ public class UserDTO {
     }
 
     public User toUserEntity(UserDTO userDTO){
-        return new User(userDTO.name, userDTO.email, userDTO.password);
+    return new User(userDTO.name, userDTO.email, userDTO.password, userDTO.getPhone());
     }
 
     public String getName() {return name;}

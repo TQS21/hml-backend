@@ -13,7 +13,7 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/hml/api")
-@CrossOrigin(origins = "",allowedHeaders = "")
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 public class HmlAPI {
 
     Logger logger = LoggerFactory.getLogger(HmlAPI.class);
