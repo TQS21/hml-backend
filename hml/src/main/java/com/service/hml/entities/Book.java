@@ -34,6 +34,10 @@ public class Book {
     @JsonIgnore
     Set<History> history = new HashSet<>();
 
+    @OneToMany(mappedBy = "bookOrdered")
+    @JsonIgnore
+    Set<OrderStats> orderStats = new HashSet<>();
+
     public Book(){
     }
 

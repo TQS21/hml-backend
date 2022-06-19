@@ -15,24 +15,64 @@ public class OrderStats {
     @Column(name = "id", nullable = false)
     private int id;
 
-    @Column(name = "book_id", nullable = false)
-    private Book book;
+    @ManyToOne
+    @JoinColumn(name = "book_id")
+    private Book bookOrdered;
 
     @Column(name = "order_id", nullable = false)
-    private Order order;
+    private int orderId;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
-    @Column(name = "price", nullable = false)
-    private Double price;
-    @Column(name = "available", nullable = false)
-    private boolean available;
-
-    @OneToMany(mappedBy = "bookHistory")
-    @JsonIgnore
-    Set<History> history = new HashSet<>();
 
     public OrderStats(){
     }
-    
+
+    public OrderStats(Book book, int orderId, int quantity) {
+        this.bookOrdered = book;
+        this.orderId = orderId;
+        this.quantity = quantity;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Book getBook() {
+        return bookOrdered;
+    }
+
+    public void setBook(Book book) {
+        this.bookOrdered = book;
+    }
+
+    public int getOrderId() {
+        return orderId;
+    }
+
+    public void setOrderId(int orderId) {
+        this.orderId = orderId;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderStats{" +
+                "id=" + id +
+                ", book=" + bookOrdered +
+                ", orderId=" + orderId +
+                ", quantity=" + quantity +
+                '}';
+    }
 }
