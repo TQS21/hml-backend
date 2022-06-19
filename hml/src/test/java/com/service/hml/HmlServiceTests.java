@@ -112,14 +112,14 @@ public class HmlServiceTests {
         assertThat(result.getBody().getDelivery()).isGreaterThan(-1);
     }
 
-    @Test
-    void check(){
-        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
-
-        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
-
-        hmlService.checkDelivery(user);
-    }
+//    @Test
+//    void check(){
+//        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+//
+//        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
+//
+//        hmlService.checkDelivery(user);
+//    }
 
     @Test
     void whenLogginCorrectly_loggin() throws Exception {

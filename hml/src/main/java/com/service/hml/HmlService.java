@@ -35,7 +35,7 @@ public class HmlService {
     @Autowired
     private HistoryRepository historyRepository;
 
-     private final WebClient apiClient = WebClient.create("http://localhost:9090");
+     private final WebClient apiClient = WebClient.create("http://localhost:8080");
 
 //    private final WebClient apiClient = WebClient.builder()
 //            .clientConnector(new ReactorClientHttpConnector(
@@ -50,7 +50,7 @@ public class HmlService {
         Order order = orderDTO.createOrder();
 
         String external_response = apiClient.post()
-                .uri("/delivery/")
+                .uri("http://localhost:9090/delivery/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(order), JsonObject.class)
@@ -75,7 +75,7 @@ public class HmlService {
         User user = userRepository.findByEmail(userDTO.getEmail());
 
         String external_response = apiClient.get()
-                .uri("/delivery/"+user.getDelivery())
+                .uri("http://localhost:9090/delivery/"+user.getDelivery())
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve()
                 .bodyToMono(String.class)
