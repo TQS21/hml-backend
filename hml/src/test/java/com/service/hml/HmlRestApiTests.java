@@ -5,6 +5,7 @@ import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -106,6 +107,22 @@ public class HmlRestApiTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @Test
+    void whenCheckUserOrder_returnUserOrder() throws IOException, Exception{
+        mvc.perform(get("/hml/api/delivery/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isFound());
+    }
+
+    @Test
+    void whenCheckOrderById_returnOrdersById() throws IOException, Exception{
+        mvc.perform(get("/hml/api/order/1")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isFound());
     }
 
     @Test

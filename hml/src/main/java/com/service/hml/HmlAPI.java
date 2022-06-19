@@ -26,6 +26,16 @@ public class HmlAPI {
         hmlService.makeDelivery(order);
     }
 
+    @GetMapping("/delivery/{id}")
+    public ResponseEntity<String> checkDelivery(@PathVariable(required = true, name = "id") int orderId){
+        return hmlService.checkDelivery(orderId);
+    }
+
+    @GetMapping("/order/{id}")
+    public ResponseEntity<List<OrderStats>> checkOrder(@PathVariable(required = true, name = "id") int id){
+        return hmlService.checkOrder(id);
+    }
+
     @GetMapping("/history")
     public Set<History> getHistory(@RequestBody @NotNull UserDTO userDTO){
         return hmlService.getHistory(userDTO).getBody();

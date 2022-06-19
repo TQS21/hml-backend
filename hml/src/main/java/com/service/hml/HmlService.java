@@ -4,6 +4,7 @@ import com.google.gson.*;
 import com.service.hml.entities.*;
 import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
+import com.service.hml.repositories.OrderRepository;
 import com.service.hml.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,9 @@ public class HmlService {
 
     @Autowired
     private HistoryRepository historyRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
 
      private final WebClient apiClient = WebClient.create("http://localhost:8080");
 
@@ -71,11 +75,10 @@ public class HmlService {
                 .body(user);
     }
 
-    public ResponseEntity<String> checkDelivery(UserDTO userDTO){
-        User user = userRepository.findByEmail(userDTO.getEmail());
+    public ResponseEntity<String> checkDelivery(int orderId){
 
         String external_response = apiClient.get()
-                .uri("http://localhost:9090/delivery/"+user.getDelivery())
+                .uri("http://localhost:9090/delivery/"+orderId)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve()
                 .bodyToMono(String.class)
@@ -84,15 +87,23 @@ public class HmlService {
         GsonBuilder builder = new GsonBuilder();
         builder.serializeNulls();
         Gson gson = builder.setPrettyPrinting().create();
-
-        JsonObject response = gson.fromJson(external_response, JsonObject.class);
-        JsonPrimitive courier = response.getAsJsonPrimitive("courier");
-        JsonPrimitive status = response.getAsJsonPrimitive("status");
-
         System.out.println(external_response);
+        JsonObject response = gson.fromJson(external_response, JsonObject.class);
+        JsonObject orderStatus = response.getAsJsonObject("orderStatus");
+        JsonPrimitive status = orderStatus.getAsJsonPrimitive("status");
 
-        JsonObject full_json_response = gson.fromJson(external_response, JsonObject.class);
-        return null;
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("find-all-books")
+                .body(status.getAsString());
+    }
+
+    public ResponseEntity<List<OrderStats>> checkOrder(int orderId){
+
+        List<OrderStats> order = orderRepository.findByOrderId(orderId);
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("find-all-books")
+                .body(order);
     }
 
     public ResponseEntity<Set<History>> getHistory(UserDTO userDTO){
@@ -102,8 +113,6 @@ public class HmlService {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("find-all-books")
                 .body(user.getHistory());
-
-        //return hmlRepository.findAll();
     }
 
     public ResponseEntity<List<Book>> getAllBooks(){
@@ -111,8 +120,6 @@ public class HmlService {
         return ResponseEntity.status(HttpStatus.FOUND)
                 .header("find-all-books")
                 .body(hmlRepository.findAll());
-
-        //return hmlRepository.findAll();
     }
 
     public ResponseEntity<Book> getBookDetails(String title){
@@ -129,8 +136,6 @@ public class HmlService {
         return ResponseEntity.status(status)
                 .header("find-book-"+title,"book")
                 .body(book);
-
-        // return new ResponseEntity<Book>(book, status);
     }
 
     public ResponseEntity<Book> addNewBook(BookDTO book){
@@ -139,8 +144,6 @@ public class HmlService {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .header("new-book-added")
                 .body(book.toBookEntity());
-
-        //return new ResponseEntity<Book>(saved, HttpStatus.CREATED);
     }
 
     public ResponseEntity<User> login(UserDTO userDTO){
@@ -157,8 +160,6 @@ public class HmlService {
         return ResponseEntity.status(status)
                 .header("login-in")
                 .body(user);
-
-        //return new ResponseEntity<User>(user, status);
     }
 
     public ResponseEntity<User> register(UserDTO userDTO){
@@ -174,8 +175,6 @@ public class HmlService {
         return ResponseEntity.status(status)
                 .header("registered")
                 .body(user);
-
-        //return new ResponseEntity<User>(user, status);
     }
 
 }

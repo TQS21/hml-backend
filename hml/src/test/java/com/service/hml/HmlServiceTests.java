@@ -2,7 +2,9 @@ package com.service.hml;
 
 import com.service.hml.entities.*;
 import com.service.hml.repositories.HmlRepository;
+import com.service.hml.repositories.OrderRepository;
 import com.service.hml.repositories.UserRepository;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,10 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -27,6 +26,9 @@ public class HmlServiceTests {
 
     @Mock( lenient = true)
     private UserRepository userRepository;
+
+    @Mock( lenient = true)
+    private OrderRepository orderRepository;
 
     @InjectMocks
     private HmlService hmlService = new HmlService();
@@ -113,13 +115,33 @@ public class HmlServiceTests {
     }
 
 //    @Test
-//    void check(){
-//        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+//    void whenCheckDeliveryStatus_returnDeliveryStatus(){
+//        ResponseEntity<String> result = hmlService.checkDelivery(1);
 //
-//        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
-//
-//        hmlService.checkDelivery(user);
+//        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+//        assertThat(result.getBody()).isEqualTo("QUEUED");
 //    }
+
+    @Test
+    void whenCheckOrder_returnAllOrders(){
+        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
+        Book audi = new Book("Audi", "Audi A8", "", 5.0);
+
+        OrderStats orderStats1 = new OrderStats(ford,1,10);
+        OrderStats orderStats2 = new OrderStats(audi,1,5);
+
+        List<OrderStats> orderStats = new ArrayList<>();
+        orderStats.add(orderStats1);
+        orderStats.add(orderStats2);
+
+        Mockito.when(orderRepository.findByOrderId(orderStats1.getOrderId())).thenReturn(orderStats);
+
+        ResponseEntity<List<OrderStats>> response = hmlService.checkOrder(1);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.FOUND);
+        assertThat(response.getBody()).hasSize(2);
+        assertThat(response.getBody()).isEqualTo(orderStats);
+    }
 
     @Test
     void whenLogginCorrectly_loggin() throws Exception {
