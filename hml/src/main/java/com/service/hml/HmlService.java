@@ -1,28 +1,22 @@
 package com.service.hml;
 
 import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import com.service.hml.entities.*;
 import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
-import io.netty.resolver.DefaultAddressResolverGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
 
-import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -53,8 +47,6 @@ public class HmlService {
 
 
     public ResponseEntity<User> makeDelivery(OrderDTO orderDTO){
-        Gson gson = new Gson();
-
         Order order = orderDTO.createOrder();
 
         String external_response = apiClient.post()
@@ -66,6 +58,7 @@ public class HmlService {
                 .bodyToMono(String.class)
                 .block();
 
+        Gson gson = new Gson();
         JsonObject jsonResp = gson.fromJson(external_response, JsonObject.class);
         JsonPrimitive orderId = jsonResp.getAsJsonPrimitive("id");
         int id = gson.fromJson(orderId, int.class);
@@ -92,17 +85,13 @@ public class HmlService {
         builder.serializeNulls();
         Gson gson = builder.setPrettyPrinting().create();
 
+        JsonObject response = gson.fromJson(external_response, JsonObject.class);
+        JsonPrimitive courier = response.getAsJsonPrimitive("courier");
+        JsonPrimitive status = response.getAsJsonPrimitive("status");
+
         System.out.println(external_response);
 
         JsonObject full_json_response = gson.fromJson(external_response, JsonObject.class);
-//
-//        JsonArray response = full_json_response.getAsJsonArray("status");
-//
-//        String allInfo = gson.toJson(response.get(response.size()-1).getAsJsonObject());
-//
-//        List<Status> allStatus = (List<Status>) gson.fromJson(allInfo, Status.class);
-//
-//        System.out.println(allStatus);
         return null;
     }
 

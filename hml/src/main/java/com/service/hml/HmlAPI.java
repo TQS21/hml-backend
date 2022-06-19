@@ -1,28 +1,19 @@
 package com.service.hml;
 
 import com.service.hml.entities.*;
-import com.service.hml.repositories.HmlRepository;
-import com.service.hml.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.List;
 import java.util.Set;
 
 @RestController
 @RequestMapping("/hml/api")
+@CrossOrigin(origins = "",allowedHeaders = "")
 public class HmlAPI {
 
     Logger logger = LoggerFactory.getLogger(HmlAPI.class);
