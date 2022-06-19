@@ -1,0 +1,51 @@
+services:
+  db_users:
+    image: postgres:14.1-alpine
+    environment:
+      - PGUSER=hml_service_users
+      - POSTGRES_DB=hml_service_users
+      - POSTGRES_USER=hml_service_users
+      - POSTGRES_PASSWORD=hml
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  db_books:
+    image: postgres:14.1-alpine
+    environment:
+      - PGUSER=hml_service_books
+      - POSTGRES_DB=hml_service_books
+      - POSTGRES_USER=hml_service_books
+      - POSTGRES_PASSWORD=hml_books
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+
+  hml-api:
+    depends_on:
+      db_users:
+        condition: service_healthy
+      db_books:
+        condition: service_healthy
+    build: ./hml
+    environment:
+      - SPRING_DATASOURCE_URL_USERS=jdbc:postgresql://db_users:5432/hml_service_users
+      - SPRING_DATASOURCE_USERNAME_USERS=hml_service_users
+      - SPRING_DATASOURCE_PASSWORD_USERS=hml
+
+      - SPRING_DATASOURCE_URL_BOOKS=jdbc:postgresql://db_books:5434/hml_service_books
+      - SPRING_DATASOURCE_USERNAME_BOOKS=hml_service_books
+      - SPRING_DATASOURCE_PASSWORD_BOOKS=hml_books
+
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - 9092:8080
+    restart: on-failure
