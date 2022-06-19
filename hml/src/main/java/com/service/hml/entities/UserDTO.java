@@ -12,12 +12,21 @@ public class UserDTO {
 
     private String password;
 
+    private int phone;
+
     public UserDTO(){}
 
     public UserDTO(String name, String email, String password){
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public UserDTO(String name, String email, String password, int phone){
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
     }
 
     public static UserDTO fromUserEntity(User user){
@@ -36,5 +45,23 @@ public class UserDTO {
 
     public String getPassword() {
         return password;
+    }
+
+    public int getPhone() {
+        return phone;
+    }
+
+    public void setPhone(int phone) {
+        this.phone = phone;
+    }
+
+    @Override
+    public String toString() {
+        return "UserDTO{" +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phone=" + phone +
+                '}';
     }
 }

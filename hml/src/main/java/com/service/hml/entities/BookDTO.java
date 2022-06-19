@@ -13,7 +13,7 @@ public class BookDTO {
 
 
     public static BookDTO fromBookEntity(Book book){
-        return new BookDTO(book.getID(), book.getTitle(), book.getAuthor(), book.getCoverUrlPath(), book.getPrice());
+        return new BookDTO(book.getId(), book.getTitle(), book.getAuthor(), book.getCoverUrlPath(), book.getPrice());
     }
 
     public Book toBookEntity(){

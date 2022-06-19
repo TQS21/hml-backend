@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.lang.reflect.Array;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/hml/api")
@@ -29,11 +31,13 @@ public class HmlAPI {
     private HmlService hmlService;
 
     @PostMapping("/delivery")
-    public void makeDelivery(@RequestBody @NotNull BookDTO bookDTO,
-                             @RequestBody @NotNull Address address,
-                             @RequestBody @NotNull UserDTO user,
-                             @RequestBody @NotNull int phone){
-        hmlService.makeDelivery(bookDTO, address, user, phone);
+    public void makeDelivery(@RequestBody @NotNull OrderDTO order){
+        hmlService.makeDelivery(order);
+    }
+
+    @GetMapping("/history")
+    public Set<History> getHistory(@RequestBody @NotNull UserDTO userDTO){
+        return hmlService.getHistory(userDTO).getBody();
     }
 
     @GetMapping("/allBooks")

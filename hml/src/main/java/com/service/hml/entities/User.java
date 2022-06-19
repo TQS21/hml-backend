@@ -1,10 +1,12 @@
 package com.service.hml.entities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+
+import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -16,10 +18,17 @@ public class User {
     @Id
     @Email
     @Column(name = "email", nullable = false, unique = true)
-    private String email;
+    String email;
 
     @Column(name = "password", nullable = false)
     private String password;
+
+    @OneToMany(mappedBy = "userHistory")
+    @JsonIgnore
+    Set<History> history = new HashSet<>();
+
+    @Column(name = "delivery")
+    private int delivery = -1;
 
     public User(){}
 
@@ -51,6 +60,22 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Set<History> getHistory() {
+        return history;
+    }
+
+    public void setHistory(Set<History> history) {
+        this.history = history;
+    }
+
+    public int getDelivery() {
+        return delivery;
+    }
+
+    public void setDelivery(int delivery) {
+        this.delivery = delivery;
     }
 
     @Override

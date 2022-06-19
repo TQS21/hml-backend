@@ -1,12 +1,9 @@
 package com.service.hml;
 
-import com.google.gson.Gson;
+import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
-import com.service.hml.entities.Address;
-import com.service.hml.entities.Book;
-import com.service.hml.entities.BookDTO;
-import com.service.hml.entities.User;
-import com.service.hml.entities.UserDTO;
+import com.service.hml.entities.*;
+import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
 import io.netty.resolver.DefaultAddressResolverGroup;
@@ -14,17 +11,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClient;
 
 import java.lang.reflect.Type;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 
 @Service
+@Transactional
 public class HmlService {
 
     Logger logger = LoggerFactory.getLogger(HmlService.class);
@@ -35,48 +38,83 @@ public class HmlService {
     @Autowired
     private UserRepository userRepository;
 
-    // private final WebClient apiClient = WebClient.create("http://deti-tqs-05:8080");
+    @Autowired
+    private HistoryRepository historyRepository;
 
-    private final WebClient apiClient = WebClient.builder()
-            .clientConnector(new ReactorClientHttpConnector(
-                            HttpClient.create()
-                                    .resolver(DefaultAddressResolverGroup.INSTANCE)
-                    ))
-            .baseUrl("http://deti-tqs-05:8080")
-            .build();
+     private final WebClient apiClient = WebClient.create("http://localhost:9090");
+
+//    private final WebClient apiClient = WebClient.builder()
+//            .clientConnector(new ReactorClientHttpConnector(
+//                            HttpClient.create()
+//                                    .resolver(DefaultAddressResolverGroup.INSTANCE)
+//                    ))
+//            .baseUrl("http://localhost:9090")
+//            .build();
 
 
-    public String makeDelivery(BookDTO bookDTO, Address add, UserDTO user, int phone){
-        //hmlRepository.findByTitle(bookDTO.toBookEntity().getTitle()).setAvailable(false);
-
-        Address address = add;
-
-        HashMap<String, Object> body = new HashMap<>();
-        HashMap<String, String> client = new HashMap<>();
-
-        body.put("shop_id", 0);
-        body.put("courier_id", 0);
-        client.put("name", user.getName());
-        client.put("phone_number",String.valueOf(phone));
-        body.put("client", client);
-        body.put("address", address);
-
+    public ResponseEntity<User> makeDelivery(OrderDTO orderDTO){
         Gson gson = new Gson();
-        Type gsonType = new TypeToken<HashMap>(){}.getType();
-        String gsonString = gson.toJson(body,gsonType);
 
-    /*String external_response = apiClient.post()
-            .uri("/delivery")
-            .acceptCharset(StandardCharsets.UTF_8)
-            .body(Mono.just(gsonString), String.class)
-            .retrieve()
-            .bodyToMono(String.class)
-            .block();
+        Order order = orderDTO.createOrder();
+
+        String external_response = apiClient.post()
+                .uri("/delivery/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .body(Mono.just(order), JsonObject.class)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
 
         JsonObject jsonResp = gson.fromJson(external_response, JsonObject.class);
-        JsonArray getDeliveryResponse = jsonResp.getAsJsonArray("status");
-        return external_response;*/
-        return gsonString;
+        JsonPrimitive orderId = jsonResp.getAsJsonPrimitive("id");
+        int id = gson.fromJson(orderId, int.class);
+
+        User user = userRepository.findByEmail(orderDTO.getUserDTO().getEmail());
+        user.setDelivery(id);
+
+        return ResponseEntity.status(HttpStatus.OK)
+                .header("login-in")
+                .body(user);
+    }
+
+    public ResponseEntity<String> checkDelivery(UserDTO userDTO){
+        User user = userRepository.findByEmail(userDTO.getEmail());
+
+        String external_response = apiClient.get()
+                .uri("/delivery/"+user.getDelivery())
+                .acceptCharset(StandardCharsets.UTF_8)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        GsonBuilder builder = new GsonBuilder();
+        builder.serializeNulls();
+        Gson gson = builder.setPrettyPrinting().create();
+
+        System.out.println(external_response);
+
+        JsonObject full_json_response = gson.fromJson(external_response, JsonObject.class);
+//
+//        JsonArray response = full_json_response.getAsJsonArray("status");
+//
+//        String allInfo = gson.toJson(response.get(response.size()-1).getAsJsonObject());
+//
+//        List<Status> allStatus = (List<Status>) gson.fromJson(allInfo, Status.class);
+//
+//        System.out.println(allStatus);
+        return null;
+    }
+
+    public ResponseEntity<Set<History>> getHistory(UserDTO userDTO){
+
+        User user = userRepository.findByEmail(userDTO.getEmail());
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .header("find-all-books")
+                .body(user.getHistory());
+
+        //return hmlRepository.findAll();
     }
 
     public ResponseEntity<List<Book>> getAllBooks(){

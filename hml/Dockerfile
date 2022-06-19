@@ -7,4 +7,4 @@ COPY src ./src
 RUN mvn package
 
 COPY target/hml-0.0.1-SNAPSHOT.jar hml.jar
-CMD ["java", "-jar", "/hml.jar"]
+CMD ["java", "-jar", "/target/hml-0.0.1-SNAPSHOT.jar"]

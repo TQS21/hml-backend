@@ -1,10 +1,6 @@
 package com.service.hml;
 
-import com.service.hml.entities.Address;
-import com.service.hml.entities.Book;
-import com.service.hml.entities.BookDTO;
-import com.service.hml.entities.User;
-import com.service.hml.entities.UserDTO;
+import com.service.hml.entities.*;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -17,7 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -42,6 +40,22 @@ public class HmlServiceTests {
     }
 
     @Test
+    void whenGetUserHistory_thenGetHistory(){
+        User user = new User("test", "test@gmail.com", "1234");
+        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
+        Book audi = new Book("Audi", "Audi A8", "", 5.0);
+
+        Set<History> history = new HashSet<>();
+        History history1 = new History(user,ford);
+        History history2 = new History(user,audi);
+        user.setHistory(history);
+
+        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user);
+
+        assertThat(history).isEqualTo(hmlService.getHistory(UserDTO.fromUserEntity(user)).getBody());
+    }
+
+    @Test
     void whenGetBookAllBooks_thenGetAllBooks(){
         Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
         Book audi = new Book("Audi", "Audi A8", "", 5.0);
@@ -50,9 +64,7 @@ public class HmlServiceTests {
         List<Book> addedBooks = Arrays.asList(ford,audi,bmw);
 
         Mockito.when(hmlRepository.findAll()).thenReturn(addedBooks);
-        Mockito.when(hmlService.getAllBooks().getBody()).thenReturn(addedBooks);
 
-        assertThat(addedBooks).isEqualTo(hmlRepository.findAll());
         assertThat(addedBooks).isEqualTo(hmlService.getAllBooks().getBody());
     }
 
@@ -86,12 +98,27 @@ public class HmlServiceTests {
 
     @Test
     void whenValidInput_thenCreateDelivery(){
-        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
-        hmlRepository.saveAndFlush(ford);
-        BookDTO book = BookDTO.fromBookEntity(ford);
-        UserDTO user = UserDTO.fromUserEntity(new User("test1", "test1@gmail.com","1234"));
-        Address address = new Address("Portugal","4505-519","rua fodasse");
-        System.out.println(hmlService.makeDelivery(book,address,user,967827582));
+        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+        Address address = new Address("PT","841","rua santo andre");
+        OrderDTO orderDTO = new OrderDTO(user,address);
+
+        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
+
+        assertThat(userRepository.findByEmail(user.getEmail()).getDelivery()).isEqualTo(-1);
+
+        ResponseEntity<User> result = hmlService.makeDelivery(orderDTO);
+
+        assertThat(result.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(result.getBody().getDelivery()).isGreaterThan(-1);
+    }
+
+    @Test
+    void check(){
+        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+
+        Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
+
+        hmlService.checkDelivery(user);
     }
 
     @Test

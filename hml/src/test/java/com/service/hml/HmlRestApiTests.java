@@ -1,10 +1,10 @@
 package com.service.hml;
 
-import com.service.hml.entities.Book;
-import com.service.hml.entities.User;
+import com.service.hml.entities.*;
+import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.UserRepository;
-import org.junit.jupiter.api.AfterEach;
+import net.minidev.json.JSONArray;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,15 +17,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.CoreMatchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @SpringBootTest(webEnvironment = WebEnvironment.MOCK, classes = HmlApplication.class)
 @AutoConfigureMockMvc
@@ -41,11 +45,15 @@ public class HmlRestApiTests {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private HistoryRepository historyRepository;
+
     Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
     User test1 = new User("test1", "test1@gmail.com","1234");
 
     @BeforeEach
     public void insertIntoDb() {
+        historyRepository.deleteAll();
         hmlRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -73,7 +81,6 @@ public class HmlRestApiTests {
         hmlRepository.saveAndFlush(bmw);
 
         mvc.perform(get("/hml/api/allBooks").contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(3))));
@@ -82,21 +89,26 @@ public class HmlRestApiTests {
     @Test
     void whenValidTittle_thenGetBook() throws IOException, Exception{
         mvc.perform(get("/hml/api/book/"+ford.getTitle()).contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isFound());
     }
 
     @Test
     void whenInvalidTittle_thenGetNotFound() throws IOException, Exception{
         mvc.perform(get("/hml/api/book/title").contentType(MediaType.APPLICATION_JSON))
-                .andDo(print())
                 .andExpect(status().isNotFound());
     }
 
     @Test
     void whenValidInput_thenCreateDelivery() throws IOException, Exception{
-        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
-        //mvc.perform(post("/hml/api/delivery").contentType(MediaType.APPLICATION_JSON).content(JsonUtils.toJson(ford)));
+        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+        userRepository.saveAndFlush(user.toUserEntity(user));
+        Address address = new Address("PT","841","rua santo andre");
+        OrderDTO order = new OrderDTO(user,address);
+        mvc.perform(post("/hml/api/delivery")
+                        .content(asJsonString(order))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
 
     }
 
@@ -111,7 +123,6 @@ public class HmlRestApiTests {
     @Test
     void whenLogginIncorrectly_failTologgin() throws Exception{
         test1.setPassword("4321");
-
         mvc.perform(post("/hml/api/login/")
                         .content(asJsonString(test1))
                         .contentType(MediaType.APPLICATION_JSON))
@@ -137,7 +148,7 @@ public class HmlRestApiTests {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isAccepted());
     }
-    
+
     @Test
     void whenRegisterOldUser_returnsNotAcceptable() throws Exception{
         User test1 = new User("test1", "test1@gmail.com","1234");
@@ -146,6 +157,22 @@ public class HmlRestApiTests {
                         .content(asJsonString(test1))
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotAcceptable());
+    }
+
+    @Test
+    void whenGetUserHistory_thenGetHistory() throws Exception {
+        History history = new History(test1, ford);
+        historyRepository.saveAndFlush(history);
+        System.out.println(historyRepository.findAll());
+
+        mvc.perform(get("/hml/api/history")
+                        .content(asJsonString(UserDTO.fromUserEntity(test1)))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].book.title", is(ford.getTitle())));
     }
 
     public static String asJsonString(final Object obj) {

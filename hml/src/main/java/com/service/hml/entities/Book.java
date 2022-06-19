@@ -1,15 +1,20 @@
 package com.service.hml.entities;
 
-import javax.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
+import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 @Entity
 @Table(name = "books")
 public class Book {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "ID", nullable = false)
-    private int ID;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    int id;
 
     @Column(name = "title", nullable = false)
     private String title;
@@ -25,6 +30,10 @@ public class Book {
     @Column(name = "available", nullable = false)
     private boolean available;
 
+    @OneToMany(mappedBy = "bookHistory")
+    @JsonIgnore
+    Set<History> history = new HashSet<>();
+
     public Book(){
     }
 
@@ -36,8 +45,8 @@ public class Book {
         this.available = true;
     }
 
-    public Book(int ID, String title, String author, String coverUrlPath, Double price){
-        this.ID = ID;
+    public Book(int id, String title, String author, String coverUrlPath, Double price){
+        this.id = id;
         this.title = title;
         this.author = author;
         this.coverUrlPath = coverUrlPath;
@@ -45,12 +54,12 @@ public class Book {
         this.available = true;
     }
 
-    public int getID() {
-        return ID;
+    public int getId() {
+        return id;
     }
 
-    public void setID(int ID) {
-        this.ID = ID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -89,10 +98,22 @@ public class Book {
         this.price = price;
     }
 
+    public Set<History> getHistory() {
+        return history;
+    }
+
+    public void setHistory(Set<History> ordered) {
+        this.history = ordered;
+    }
+
+    public void addHistory(History ordered) {
+        this.history.add(ordered);
+    }
+
     @Override
     public String toString() {
         return "Book{" +
-                "ID=" + ID +
+                "ID=" + id +
                 ", title='" + title + '\'' +
                 ", author='" + author + '\'' +
                 ", coverUrlPath='" + coverUrlPath + '\'' +
