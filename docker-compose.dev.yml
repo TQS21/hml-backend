@@ -49,3 +49,8 @@ services:
     ports:
       - 9092:8080
     restart: on-failure
+
+networks:
+  default:
+    name: dev
+    external: true

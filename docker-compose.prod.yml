@@ -49,3 +49,8 @@ services:
     ports:
       - 8081:8080
     restart: on-failure
+
+networks:
+  default:
+    name: prod
+    external: true

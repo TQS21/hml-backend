@@ -49,3 +49,8 @@ services:
     ports:
       - 9093:8080
     restart: on-failure
+
+networks:
+  default:
+    name: test
+    external: true
