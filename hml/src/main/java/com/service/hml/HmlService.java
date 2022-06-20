@@ -39,7 +39,7 @@ public class HmlService {
     @Autowired
     private OrderRepository orderRepository;
 
-     private final WebClient apiClient = WebClient.create("http://localhost:8080");
+     private final WebClient apiClient = WebClient.create("http://deti-tqs-05:9090/");
 
 //    private final WebClient apiClient = WebClient.builder()
 //            .clientConnector(new ReactorClientHttpConnector(
@@ -54,7 +54,7 @@ public class HmlService {
         Order order = orderDTO.createOrder();
 
         String external_response = apiClient.post()
-                .uri("http://localhost:9090/delivery/")
+                .uri("delivery/")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .body(Mono.just(order), JsonObject.class)
@@ -78,7 +78,7 @@ public class HmlService {
     public ResponseEntity<String> checkDelivery(int orderId){
 
         String external_response = apiClient.get()
-                .uri("http://localhost:9090/delivery/"+orderId)
+                .uri("delivery/"+orderId)
                 .acceptCharset(StandardCharsets.UTF_8)
                 .retrieve()
                 .bodyToMono(String.class)
