@@ -1,26 +1,19 @@
 package com.service.hml;
 
 import com.service.hml.entities.*;
-import com.service.hml.repositories.HmlRepository;
-import com.service.hml.repositories.UserRepository;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/hml/api")
+@CrossOrigin(origins = "*",allowedHeaders = "*")
 public class HmlAPI {
 
     Logger logger = LoggerFactory.getLogger(HmlAPI.class);
@@ -29,16 +22,28 @@ public class HmlAPI {
     private HmlService hmlService;
 
     @PostMapping("/delivery")
-    public void makeDelivery(@RequestBody @NotNull BookDTO bookDTO,
-                             @RequestBody @NotNull Address address,
-                             @RequestBody @NotNull UserDTO user,
-                             @RequestBody @NotNull int phone){
-        hmlService.makeDelivery(bookDTO, address, user, phone);
+    public void makeDelivery(@RequestBody @NotNull OrderDTO order){
+        hmlService.makeDelivery(order);
+    }
+
+    @GetMapping("/delivery/{id}")
+    public ResponseEntity<String> checkDelivery(@PathVariable(required = true, name = "id") int orderId){
+        return hmlService.checkDelivery(orderId);
+    }
+
+    @GetMapping("/order/{id}")
+    public ResponseEntity<List<OrderStats>> checkOrder(@PathVariable(required = true, name = "id") int id){
+        return hmlService.checkOrder(id);
+    }
+
+    @GetMapping("/history")
+    public Set<History> getHistory(@RequestBody @NotNull UserDTO userDTO){
+        return hmlService.getHistory(userDTO).getBody();
     }
 
     @GetMapping("/allBooks")
     public List<Book> getAllBooks(){
-        return hmlService.getAllBooks();
+        return hmlService.getAllBooks().getBody();
     }
 
     @GetMapping("/book/{title}")
@@ -55,4 +60,10 @@ public class HmlAPI {
     public ResponseEntity<User> login(@RequestBody @NotNull UserDTO userDTO){
         return hmlService.login(userDTO);
     }
+
+    @PostMapping("/register")
+    public ResponseEntity<User> register(@RequestBody @NotNull UserDTO userDTO){
+        return hmlService.register(userDTO);
+    }
+
 }

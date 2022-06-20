@@ -29,7 +29,7 @@ public class HmlApplication {
 			hmlRepository.save(new Book("Chainsaw Man Volume 1", "Tatsuki Fujimoto","https://static.wikia.nocookie.net/chainsaw-man/images/c/c0/ChainsawManVolume1.jpeg/revision/latest?cb=20210921233305&path-prefix=pt-br", 8.0));
 			hmlRepository.save(new Book("The Hobbit", "J. R. R. Tolkien","https://images-na.ssl-images-amazon.com/images/I/710+HcoP38L.jpg", 20.0));
 
-			userRepository.save(new User("test1", "test1@gmail.com","1234"));
+			userRepository.save(new User("test1", "test1@gmail.com","1234",123456789));
 
 			// fetch all customers
 			log.info("Customers found with findAll():");
