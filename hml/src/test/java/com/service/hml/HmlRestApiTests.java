@@ -96,18 +96,18 @@ public class HmlRestApiTests {
                 .andExpect(status().isNotFound());
     }
 
-//    @Test
-//    void whenValidInput_thenCreateDelivery() throws IOException, Exception{
-//        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
-//        userRepository.saveAndFlush(user.toUserEntity(user));
-//        Address address = new Address("PT","841","Ovar","rua santo andre");
-//        OrderDTO order = new OrderDTO(user,address);
-//        mvc.perform(post("/hml/api/delivery")
-//                        .content(asJsonString(order))
-//                .contentType(MediaType.APPLICATION_JSON))
-//                .andDo(print())
-//                .andExpect(status().isOk());
-//    }
+    @Test
+    void whenValidInput_thenCreateDelivery() throws IOException, Exception{
+        UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
+        userRepository.saveAndFlush(user.toUserEntity(user));
+        Address address = new Address("PT","841","Ovar","rua santo andre");
+        OrderDTO order = new OrderDTO(user,address);
+        mvc.perform(post("/hml/api/delivery")
+                        .content(asJsonString(order))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
 
     @Test
     void whenCheckUserOrder_returnUserOrder() throws IOException, Exception{

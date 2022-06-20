@@ -41,15 +41,6 @@ public class HmlService {
 
      private final WebClient apiClient = WebClient.create("http://deti-tqs-05:9090/");
 
-//    private final WebClient apiClient = WebClient.builder()
-//            .clientConnector(new ReactorClientHttpConnector(
-//                            HttpClient.create()
-//                                    .resolver(DefaultAddressResolverGroup.INSTANCE)
-//                    ))
-//            .baseUrl("http://localhost:9090")
-//            .build();
-
-
     public ResponseEntity<User> makeDelivery(OrderDTO orderDTO){
         Order order = orderDTO.createOrder();
 
