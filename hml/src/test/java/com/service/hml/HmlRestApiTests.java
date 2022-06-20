@@ -100,7 +100,7 @@ public class HmlRestApiTests {
     void whenValidInput_thenCreateDelivery() throws IOException, Exception{
         UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
         userRepository.saveAndFlush(user.toUserEntity(user));
-        Address address = new Address("PT","841","rua santo andre");
+        Address address = new Address("PT","841","Ovar","rua santo andre");
         OrderDTO order = new OrderDTO(user,address);
         mvc.perform(post("/hml/api/delivery")
                         .content(asJsonString(order))
