@@ -101,7 +101,7 @@ public class HmlServiceTests {
     @Test
     void whenValidInput_thenCreateDelivery(){
         UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
-        Address address = new Address("PT","841","rua santo andre");
+        Address address = new Address("PT","841","Ovar","rua santo andre");
         OrderDTO orderDTO = new OrderDTO(user,address);
 
         Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
