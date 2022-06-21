@@ -1,14 +1,19 @@
 package com.service.hml.entities;
 
+import java.util.List;
+
 public class OrderDTO {
     private UserDTO userDTO;
     private Address address;
 
+    private List<OrderStatsDTO> orderedBooks;
+
     public OrderDTO() {}
 
-    public OrderDTO(UserDTO cpd, Address apd) {
+    public OrderDTO(UserDTO cpd, Address apd, List<OrderStatsDTO> orderedBooks) {
         this.userDTO = cpd;
         this.address = apd;
+        this.orderedBooks = orderedBooks;
     }
 
     public Order createOrder(){
@@ -30,6 +35,14 @@ public class OrderDTO {
 
     public void setAddress(Address apd) {
         this.address = apd;
+    }
+
+    public List<OrderStatsDTO> getOrderedBooks() {
+        return orderedBooks;
+    }
+
+    public void setOrderedBooks(List<OrderStatsDTO> orderedBooks) {
+        this.orderedBooks = orderedBooks;
     }
 
     @Override

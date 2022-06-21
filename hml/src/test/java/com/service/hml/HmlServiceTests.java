@@ -4,7 +4,6 @@ import com.service.hml.entities.*;
 import com.service.hml.repositories.HmlRepository;
 import com.service.hml.repositories.OrderRepository;
 import com.service.hml.repositories.UserRepository;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -102,7 +101,11 @@ public class HmlServiceTests {
     void whenValidInput_thenCreateDelivery(){
         UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
         Address address = new Address("PT","841","Ovar","rua santo andre");
-        OrderDTO orderDTO = new OrderDTO(user,address);
+        Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
+        List<OrderStatsDTO> orderedBooks = new ArrayList<>();
+        orderedBooks.add(new OrderStatsDTO(ford,2));
+
+        OrderDTO orderDTO = new OrderDTO(user,address,orderedBooks);
 
         Mockito.when(userRepository.findByEmail(user.getEmail())).thenReturn(user.toUserEntity(user));
 

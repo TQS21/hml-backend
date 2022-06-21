@@ -3,9 +3,9 @@ package com.service.hml;
 import com.service.hml.entities.*;
 import com.service.hml.repositories.HistoryRepository;
 import com.service.hml.repositories.HmlRepository;
+import com.service.hml.repositories.OrderRepository;
 import com.service.hml.repositories.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -46,12 +47,16 @@ public class HmlRestApiTests {
     @Autowired
     private HistoryRepository historyRepository;
 
+    @Autowired
+    private OrderRepository orderRepository;
+
     Book ford = new Book("Ford", "2014 Tauros", "", 10.0);
     User test1 = new User("test1", "test1@gmail.com","1234",123456789);
 
     @BeforeEach
     public void insertIntoDb() {
         historyRepository.deleteAll();
+        orderRepository.deleteAll();
         hmlRepository.deleteAll();
         userRepository.deleteAll();
 
@@ -100,8 +105,20 @@ public class HmlRestApiTests {
     void whenValidInput_thenCreateDelivery() throws IOException, Exception{
         UserDTO user = new UserDTO("test", "test@gmail.com", "1234", 921593214);
         userRepository.saveAndFlush(user.toUserEntity(user));
+
         Address address = new Address("PT","841","Ovar","rua santo andre");
-        OrderDTO order = new OrderDTO(user,address);
+
+        Book audi = new Book("Audi", "Audi A8", "", 5.0);
+        hmlRepository.saveAndFlush(audi);
+
+        OrderStatsDTO orderedBook1 = new OrderStatsDTO(ford,2);
+        OrderStatsDTO orderedBook2 = new OrderStatsDTO(audi,5);
+        List<OrderStatsDTO> orderedBooks = new ArrayList<>();
+        orderedBooks.add(orderedBook1);
+        orderedBooks.add(orderedBook2);
+
+        OrderDTO order = new OrderDTO(user,address,orderedBooks);
+
         mvc.perform(post("/hml/api/delivery")
                         .content(asJsonString(order))
                 .contentType(MediaType.APPLICATION_JSON))

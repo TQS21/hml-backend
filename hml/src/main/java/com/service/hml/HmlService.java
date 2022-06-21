@@ -61,6 +61,11 @@ public class HmlService {
         User user = userRepository.findByEmail(orderDTO.getUserDTO().getEmail());
         user.setDelivery(id);
 
+        for (OrderStatsDTO orderedBook : orderDTO.getOrderedBooks()){
+            OrderStats orderStats = new OrderStats(orderedBook.getBook(), id,orderedBook.getNumber());
+            orderRepository.save(orderStats);
+        }
+
         return ResponseEntity.status(HttpStatus.OK)
                 .header("login-in")
                 .body(user);
