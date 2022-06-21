@@ -124,6 +124,9 @@ public class HmlRestApiTests {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
+
+        assertThat(historyRepository.findAll()).hasSize(2);
+        assertThat(orderRepository.findAll()).hasSize(2);
     }
 
     @Test

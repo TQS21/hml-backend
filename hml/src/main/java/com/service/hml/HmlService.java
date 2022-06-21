@@ -64,6 +64,8 @@ public class HmlService {
         for (OrderStatsDTO orderedBook : orderDTO.getOrderedBooks()){
             OrderStats orderStats = new OrderStats(orderedBook.getBook(), id,orderedBook.getNumber());
             orderRepository.save(orderStats);
+            History history = new History(user,orderedBook.getBook());
+            historyRepository.save(history);
         }
 
         return ResponseEntity.status(HttpStatus.OK)
